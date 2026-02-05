@@ -1,0 +1,43 @@
+using UnityEngine;
+using System.IO.Ports;
+
+public class TiltCameraControl : MonoBehaviour
+{
+    SerialPort serial = new SerialPort("COM4", 9600);
+
+    public float moveSpeed = 0.05f;
+    public float rotateSpeed = 1.5f;
+
+    void Start()
+    {
+        serial.Open();
+        serial.ReadTimeout = 50;
+    }
+
+    void Update()
+    {
+        if (!serial.IsOpen) return;
+
+        try
+        {
+            string data = serial.ReadLine();
+            string[] values = data.Split(',');
+
+            float x = float.Parse(values[0]);
+            float y = float.Parse(values[1]);
+
+            // Lean forward/back
+            transform.Translate(Vector3.forward * y * moveSpeed);
+
+            // Tilt sideways
+            transform.Rotate(Vector3.up * x * rotateSpeed);
+        }
+        catch { }
+    }
+
+    void OnApplicationQuit()
+    {
+        if (serial.IsOpen)
+            serial.Close();
+    }
+}
