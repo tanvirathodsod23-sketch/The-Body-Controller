@@ -1,0 +1,29 @@
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_ADXL345_U.h>
+
+Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified(123);
+
+void setup() {
+  Serial.begin(9600);
+
+  if (!accel.begin()) {
+    Serial.println("ADXL345 not detected");
+    while (1);
+  }
+}
+
+void loop() {
+  sensors_event_t event;
+  accel.getEvent(&event);
+
+  float x = event.acceleration.x;
+  float y = event.acceleration.y;
+
+  // Send data in a simple format
+  Serial.print(x);
+  Serial.print(",");
+  Serial.println(y);
+
+  delay(50);
+}
